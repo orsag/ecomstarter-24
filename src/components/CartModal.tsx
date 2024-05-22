@@ -1,42 +1,40 @@
 "use client";
 
 import Image from "next/image";
-// import { useCartStore } from "@/hooks/useCartStore";
+import { useCartStore } from "@/hooks/useCartStore";
 import { media as wixMedia } from "@wix/sdk";
-// import { useWixClient } from "@/hooks/useWixClient";
+import { useWixClient } from "@/hooks/useWixClient";
 import { currentCart } from "@wix/ecom";
 
 const CartModal = () => {
   // TEMPORARY
   // const cartItems = true;
 
-  const wixClient = null;
-  // const wixClient = useWixClient();
-  const cartTemp = { lineItems: [], subtotal: { amount: 0 } };
-  const { cart, isLoading, removeItem } = { cart: cartTemp, isLoading: false, removeItem: (cl, id) => {} }; // useCartStore();
+  const wixClient = useWixClient();
+  const { cart, isLoading, removeItem } = useCartStore();
 
   const handleCheckout = async () => {
-    // try {
-    //   const checkout =
-    //     await wixClient.currentCart.createCheckoutFromCurrentCart({
-    //       channelType: currentCart.ChannelType.WEB,
-    //     });
+    try {
+      const checkout =
+        await wixClient.currentCart.createCheckoutFromCurrentCart({
+          channelType: currentCart.ChannelType.WEB,
+        });
 
-    //   const { redirectSession } =
-    //     await wixClient.redirects.createRedirectSession({
-    //       ecomCheckout: { checkoutId: checkout.checkoutId },
-    //       callbacks: {
-    //         postFlowUrl: window.location.origin,
-    //         thankYouPageUrl: `${window.location.origin}/success`,
-    //       },
-    //     });
+      const { redirectSession } =
+        await wixClient.redirects.createRedirectSession({
+          ecomCheckout: { checkoutId: checkout.checkoutId },
+          callbacks: {
+            postFlowUrl: window.location.origin,
+            thankYouPageUrl: `${window.location.origin}/success`,
+          },
+        });
 
-    //   if (redirectSession?.fullUrl) {
-    //     window.location.href = redirectSession.fullUrl;
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    // }
+      if (redirectSession?.fullUrl) {
+        window.location.href = redirectSession.fullUrl;
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -49,7 +47,7 @@ const CartModal = () => {
           {/* LIST */}
           <div className="flex flex-col gap-8">
             {/* ITEM */}
-            {cart.lineItems.map((item: any) => (
+            {cart.lineItems.map((item) => (
               <div className="flex gap-4" key={item._id}>
                 {item.image && (
                   <Image
